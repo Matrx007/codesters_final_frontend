@@ -1,7 +1,17 @@
+"""Note to frontend developer:
+The API is configured strictly to output data in JSON format.
+This way it makes it easy to use fetch() API in Javascript, for instance, to get required data.
+
+Request error messages are noted with "error" keys. 
+Always check for them before parsing retrieved data!
+"""
+
 from flask import Flask, send_from_directory
+import Models
 
 
 app = Flask(__name__)
+
 
 # Publically available routes
 @app.route('/')
