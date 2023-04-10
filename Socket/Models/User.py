@@ -130,7 +130,7 @@ class User(UserDTO):
 
         try:
             cur.execute(
-                "INSERT Users (Username,Email,Password) VALUES(?, ?, ?)",
+                "INSERT INTO Users (Username,Email,Password) VALUES(?, ?, ?)",
                 (Username,Email,h)
             )
             conn.commit()
