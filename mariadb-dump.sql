@@ -16,6 +16,38 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `Sockets`
+--
+
+DROP TABLE IF EXISTS `Sockets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Sockets` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Latitude` double DEFAULT NULL,
+  `Longitude` double DEFAULT NULL,
+  `AuthorId` int(11) DEFAULT NULL,
+  `LastEditorId` int(11) DEFAULT NULL,
+  `Address` tinytext DEFAULT NULL,
+  `Description` varchar(4096) DEFAULT NULL,
+  `CurrentTimestamp` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Sockets`
+--
+
+LOCK TABLES `Sockets` WRITE;
+/*!40000 ALTER TABLE `Sockets` DISABLE KEYS */;
+INSERT INTO `Sockets` VALUES
+(1,0,0,1002,1002,'Kükametsa 14, Botnet küla','Kükametsa laadimisauk','2023-04-10 17:28:40'),
+(2,0,0,1002,1002,'Pommiauk','Botnet','2023-04-10 17:29:10');
+/*!40000 ALTER TABLE `Sockets` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Users`
 --
 
@@ -52,4 +84,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-10 15:42:06
+-- Dump completed on 2023-04-10 20:44:06
