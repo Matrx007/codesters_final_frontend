@@ -16,6 +16,35 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `Reviews`
+--
+
+DROP TABLE IF EXISTS `Reviews`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Reviews` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `BelongsTo` int(11) DEFAULT NULL,
+  `Author` int(11) DEFAULT NULL,
+  `Content` text DEFAULT NULL,
+  `CreationTimestamp` timestamp NULL DEFAULT current_timestamp(),
+  `Rating` int(11) DEFAULT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Reviews`
+--
+
+LOCK TABLES `Reviews` WRITE;
+/*!40000 ALTER TABLE `Reviews` DISABLE KEYS */;
+INSERT INTO `Reviews` VALUES
+(2,2,1002,'I sharded','2023-04-11 19:40:37',5);
+/*!40000 ALTER TABLE `Reviews` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Sockets`
 --
 
@@ -32,7 +61,7 @@ CREATE TABLE `Sockets` (
   `Description` varchar(4096) DEFAULT NULL,
   `CurrentTimestamp` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,8 +72,37 @@ LOCK TABLES `Sockets` WRITE;
 /*!40000 ALTER TABLE `Sockets` DISABLE KEYS */;
 INSERT INTO `Sockets` VALUES
 (1,0,0,1002,1002,'Kükametsa 14, Botnet küla','Kükametsa laadimisauk','2023-04-10 17:28:40'),
-(2,0,0,1002,1002,'Pommiauk','Botnet','2023-04-10 17:29:10');
+(2,0,0,1002,1002,'Pommiauk','Botnet','2023-04-10 17:29:10'),
+(3,0,0,1002,1002,'Someaddress','lol','2023-04-11 19:52:24'),
+(4,0,0,1002,1002,'Someaddress','lol','2023-04-11 19:52:51'),
+(5,0,0,1002,1002,'Someaddress','lol','2023-04-11 19:53:16');
 /*!40000 ALTER TABLE `Sockets` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Tags`
+--
+
+DROP TABLE IF EXISTS `Tags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Tags` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `BelongsTo` int(11) DEFAULT NULL,
+  `Name` tinytext DEFAULT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Tags`
+--
+
+LOCK TABLES `Tags` WRITE;
+/*!40000 ALTER TABLE `Tags` DISABLE KEYS */;
+INSERT INTO `Tags` VALUES
+(2,2,'Botnet');
+/*!40000 ALTER TABLE `Tags` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -84,4 +142,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-10 20:44:06
+-- Dump completed on 2023-04-11 22:53:49
