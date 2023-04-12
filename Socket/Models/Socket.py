@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 import mariadb
+import copy
 import logging
 from Socket.Models.User import *
 import Socket.Utils.SQLConnector as SQLConnector 
@@ -291,7 +292,7 @@ class Review:
         :param Password: password of author to authenticate
         :param Id: id of a review to update
         :param NewContent: new descriptive content of the review
-        :param Rating: new rating of the review
+        :param NewRating: new rating of the review
         """
 
 
@@ -664,7 +665,7 @@ class SocketDTO(Socket):
             sock['Address'],
             sock['Description'],
             sock['CreationTimestamp'],
-            Tags,
+            copy.deepcopy(Tags),
             [],
             [],
             0
@@ -672,14 +673,14 @@ class SocketDTO(Socket):
 
         # Add tags to database
         for tag in Tags:
-            createdTag = Tag.Create(BelongsTo=sock.Id, Name=tag)
+            createdTag = Tag.Create(BelongsTo=sock['Id'], Name=tag)
 
             if "error" in createdTag:
                 return createdTag
 
             sockDTO.Tags.append(createdTag)
 
-        return sockDTO
+        return sockDTO.__dict__
 
 
     @staticmethod
@@ -720,8 +721,8 @@ class SocketDTO(Socket):
                 averageRating
             )
 
-            conn.close()
             return sockDTO.__dict__
+
         elif (BottomLeft[0] < 90.0 and BottomLeft[0] > -90.0 and BottomLeft[1] < 90.0 and BottomLeft[1] > -90.0 and
              TopRight[0] < 90.0 and TopRight[0] > -90.0 and TopRight[1] < 90.0 and TopRight[1] > -90.0):
             sockets = Socket.Read(BottomLeft=BottomLeft, TopRight=TopRight)

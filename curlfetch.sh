@@ -4,7 +4,7 @@ if [ $# -eq 0 ]; then
     printf '%s\n' "./curlfetch.sh <filename> <GET|POST|PUT|DELETE> <url>"
 else
     OUTPUT=$(curl --header 'Content-Type: application/json' \
-                  --cookie /tmp/cookies.txt \
+                  --cookie /tmp/newcookies.txt \
                   --cookie-jar /tmp/newcookies.txt \
                   --request $2 \
                   --data "$(cat $1)" \
