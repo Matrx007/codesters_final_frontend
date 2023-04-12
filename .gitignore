@@ -107,3 +107,4 @@ dist
 venv/
 __pycache__/
 tags
+input.json
