@@ -106,3 +106,4 @@ dist
 # Python venv and cache directories
 venv/
 __pycache__/
+tags

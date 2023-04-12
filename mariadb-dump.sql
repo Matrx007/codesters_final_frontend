@@ -119,7 +119,7 @@ CREATE TABLE `Users` (
   `Email` tinytext DEFAULT NULL,
   `Password` tinytext DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1003 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1004 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -129,7 +129,8 @@ CREATE TABLE `Users` (
 LOCK TABLES `Users` WRITE;
 /*!40000 ALTER TABLE `Users` DISABLE KEYS */;
 INSERT INTO `Users` VALUES
-(1002,'karl-m.ott','2023-04-10 12:38:53','karl@karlott.net','$2b$12$09MuMALlPZThA2zqesO/0.FAK0pU24dBFV55zYOFBTmyyihCT6kBq');
+(1002,'karl-m.ott','2023-04-10 12:38:53','karl@karlott.net','$2b$12$09MuMALlPZThA2zqesO/0.FAK0pU24dBFV55zYOFBTmyyihCT6kBq'),
+(1003,'Rainis.Randmaa','2023-04-12 16:33:16','rainis.randmaa@pornhub.com','$2b$12$VBV1I1A7gqKmwi3yvMC7b.GNb7zVvk0wMCh9UVwoV4LSQ9N.HlWw6');
 /*!40000 ALTER TABLE `Users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -142,4 +143,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-11 22:53:49
+-- Dump completed on 2023-04-12 19:43:09

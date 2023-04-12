@@ -444,7 +444,7 @@ class Socket:
 
 
     @staticmethod
-    def Read(Id: int):
+    def Read(Id: int = 0, BottomLeft: tuple = (180.0, 180.0), TopRight: tuple = (180.0, 180.0)):
         """Read socket entry with given Id
         :param Id: socket entry id
         """
@@ -452,30 +452,61 @@ class Socket:
         conn = SQLConnector.Connect()
         cur = conn.cursor()
 
-        try:
-            cur.execute(
-                "SELECT * FROM Sockets WHERE Id=?",
-                (Id,)
-            )
-        except mariadb.Error as e:
-            logging.error(e)
+        if Id != 0:
+            try:
+                cur.execute(
+                    "SELECT * FROM Sockets WHERE Id=?",
+                    (Id,)
+                )
+            except mariadb.Error as e:
+                logging.error(e)
 
 
-        for (Id,Latitude,Longitude,AuthorId,LastEditorId,Address,Description,CreationTimestamp) in cur:
-            sock = Socket(
-                Id,
-                Latitude,
-                Longitude,
-                AuthorId,
-                LastEditorId,
-                Address,
-                Description or '',
-                int(time.mktime(CreationTimestamp.timetuple()))
-            )
+            for (Id,Latitude,Longitude,AuthorId,LastEditorId,Address,Description,CreationTimestamp) in cur:
+                sock = Socket(
+                    Id,
+                    Latitude,
+                    Longitude,
+                    AuthorId,
+                    LastEditorId,
+                    Address,
+                    Description or '',
+                    int(time.mktime(CreationTimestamp.timetuple()))
+                )
 
-            return sock.__dict__
+                conn.close()
+                return sock.__dict__
 
-        return { "error": "Invalid socket Id" }
+        elif (BottomLeft[0] > -90.0 and BottomLeft[0] < 90.0 and BottomLeft[1] > -90.0 and BottomLeft[1] < 90.0 and
+             TopRight[0] > -90.0 and TopRight[0] < 90.0 and TopRight[1] > -90.0 and TopRight[1] < 90.0):
+            try:
+                cur.execute(
+                    "SELECT * FROM Sockets WHERE "
+                    "Latitude < ? AND Latitude > ? AND "
+                    "Longitude < ? AND Longitude > ?",
+                    (TopRight[1], BottomLeft[1], TopRight[0], BottomLeft[0])
+                )
+            except mariadb.Error as e:
+                logging.error(e)
+
+            sockets = []
+            for (Id,Latitude,Longitude,AuthorId,LastEditorId,Address,Description,CreationTimestamp) in cur:
+                sockets.append(Socket(
+                    Id,
+                    Latitude,
+                    Longitude,
+                    AuthorId,
+                    LastEditorId,
+                    Address,
+                    Description or '',
+                    int(time.mktime(CreationTimestamp.timetuple()))
+                ).__dict__)
+
+            conn.close()
+            return sockets
+
+        conn.close()
+        return { "error": "Either Id or bounds must be specified" }
 
 
     @staticmethod
@@ -652,40 +683,84 @@ class SocketDTO(Socket):
 
 
     @staticmethod
-    def ReadDTO(Id: int):
-        sock = Socket.Read(Id=Id)
-        if "error" in sock:
-            return sock
+    def ReadDTO(Id: int = 0, BottomLeft: tuple = (180.0, 180.0), TopRight: tuple = (180.0, 180.0)):
+        if Id != 0:
+            sock = Socket.Read(Id=Id)
+            if "error" in sock:
+                return sock
 
-        tags = Tag.Read(BelongsTo=Id)
-        if "error" in tags:
-            return tags
+            tags = Tag.Read(BelongsTo=Id)
+            if "error" in tags:
+                return tags
 
-        reviews = Review.Read(BelongsTo=Id)
-        if "error" in reviews:
-            return reviews
+            reviews = Review.Read(BelongsTo=Id)
+            if "error" in reviews:
+                return reviews
 
-        averageRating = 0.0
+            averageRating = 0.0
 
-        if len(reviews):
-            for review in reviews:
-                averageRating = averageRating + review['Rating']
+            if len(reviews):
+                for review in reviews:
+                    averageRating = averageRating + review['Rating']
 
-            averageRating = averageRating / float(len(reviews))
+                averageRating = averageRating / float(len(reviews))
 
-        sockDTO = SocketDTO(
-            sock['Id'],
-            sock['Latitude'],
-            sock['Longitude'],
-            sock['AuthorId'],
-            sock['LastEditorId'],
-            sock['Address'],
-            sock['Description'],
-            sock['CreationTimestamp'],
-            tags,
-            reviews,
-            [],
-            averageRating
-        )
+            sockDTO = SocketDTO(
+                sock['Id'],
+                sock['Latitude'],
+                sock['Longitude'],
+                sock['AuthorId'],
+                sock['LastEditorId'],
+                sock['Address'],
+                sock['Description'],
+                sock['CreationTimestamp'],
+                tags,
+                reviews,
+                [],
+                averageRating
+            )
 
-        return sockDTO.__dict__
+            conn.close()
+            return sockDTO.__dict__
+        elif (BottomLeft[0] < 90.0 and BottomLeft[0] > -90.0 and BottomLeft[1] < 90.0 and BottomLeft[1] > -90.0 and
+             TopRight[0] < 90.0 and TopRight[0] > -90.0 and TopRight[1] < 90.0 and TopRight[1] > -90.0):
+            sockets = Socket.Read(BottomLeft=BottomLeft, TopRight=TopRight)
+
+            if type(sockets) != type([]):
+                return sockets
+
+            sockDTOs = []
+            for socket in sockets:
+                tags = Tag.Read(BelongsTo=socket['Id'])
+                if "error" in tags:
+                    return tags
+                
+                reviews = Review.Read(BelongsTo=socket['Id'])
+                if "error" in reviews:
+                    return reviews
+
+                averageRating = 0.0
+                if len(reviews):
+                    for rev in reviews:
+                        averageRating = averageRating + float(rev['Rating'])
+
+                    averageRating = averageRating / float(len(reviews))
+
+                sockDTOs.append(SocketDTO(
+                    socket['Id'],
+                    socket['Latitude'],
+                    socket['Longitude'],
+                    socket['AuthorId'],
+                    socket['LastEditorId'],
+                    socket['Address'],
+                    socket['Description'],
+                    socket['CreationTimestamp'],
+                    tags,
+                    reviews,
+                    [],
+                    averageRating
+                ).__dict__)
+
+            return sockDTOs
+
+        return { "error": "Either Id or BottomLeft and TopRight must be specified" }
