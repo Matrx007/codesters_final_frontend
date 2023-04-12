@@ -4,8 +4,8 @@ import logging
 def Connect():
     try:
         conn = mariadb.connect(
-            user='socket',
-            password='password123',
+            user='root',
+            password='undefined',
             port=3306,
             database='socket'
         )

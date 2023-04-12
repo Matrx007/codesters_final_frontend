@@ -1,138 +1,13 @@
 <html>
 <head>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
-  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
-  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <style>
-    body {
-      margin: 0;
-    }
-
-    * {
-      box-sizing: content-box;
-    }
-
-    p, b, h1, h2, h3, h4, h5, h6, button, a, input {
-      font-family: Arial, Helvetica, sans-serif;
-      letter-spacing: 0.2px;
-      margin: 0;
-    }
-
-    hr {
-      width: 100%;
-
-      border: none;
-      border-top: solid 1px #eee;
-    }
-
-    .text-center {
-      text-align: center;
-    }
-
-    .panel {
-      position: fixed;
-      z-index: 1000;
-
-      top: 32px;
-      right: 32px;
-      bottom: 32px;
-      width: 320px;
-      gap: 16px;
-
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      
-      filter: drop-shadow(0 0 32px #00000040);
-    }
-
-    .panel > .box {
-      position: relative;
-
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 16px;
-
-      padding: 8px;
-
-      border-radius: 8px;
-      background-color: white;
-    }
-
-    .panel .subtitle {
-      padding-top: 16px;
-    }
-
-    .panel > .box:last-child {
-      flex: 1;
-    }
-
-    .title {
-      padding-block: 16px;
-      border-radius: 6px;
-
-      background-color: #000;
-      color: white;
-    }
-
-    .slogan {
-      text-decoration: underline;
-      font-size: 24px;
-
-      margin-bottom: 8px;
-    }
-
-    .locations {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .locations > .location {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 8px;
-
-      border-radius: 6px;
-      border: solid 1px #eee;
-    }
-
-    .locations > .location > .open {
-      align-self: flex-end;
-    }
-
-    .locations > .location > .count {
-      font-size: 14px;
-    }
-
-    button {
-      cursor: pointer;
-
-      padding: 8px 16px;
-      border: none;
-      outline: none;
-
-      border-radius: 6px;
-
-      font-size: 14px;
-      font-weight: 400;
-      background-color: #eee;
-      color: black;
-    }
-
-    button:hover,
-    button:focus {
-      background-color: #ddd;
-    }
-  </style>
   <div id="map" style="height: 100vh; width: 100vw;"></div>
   <div class="panel">
 
@@ -142,65 +17,198 @@
   
       <i class="text-center slogan">Seek power</i>
 
+      <div id="logged-in" class="column g8" style="display: none;">
+        <button class="open" id="logout">Logi välja</button>
+        
+        <p class="width100 text-center">Olete sisse logitud</p>
+      </div>
+      <div id="logged-out" class="column g8">
+        <button class="open" id="show-login">Logi sisse</button>
+        <button class="open" id="show-register">Registreeru</button>
+      </div>
+
     </div>
 
 
-    <div class="box">
+    <div id="view" class="box disable-scrollbars">
 
-      <h3 class="text-center subtitle">Punktid sinu lähedal</h3>
+      <div id="socket-view" class="column g16 p16" style="display: none;">
+        <div class="row g16 center-cross">
+          <button id="socket-back" class="open" style="width: fit-content;">🡸</button>
 
-      <div class="locations">
-        <div class="location">
-          <b class="name">Ülemiste keskus</b>
-          <p class="count">36 laadimispunkti</p>
-          <button class="open">Vaata</button>
+          <h3>Laadimispunkt</h3>
         </div>
-        <div class="location">
-          <b class="name">Reval Cafe Müürivahe</b>
-          <p class="count">12 laadimispunkti</p>
-          <button class="open">Vaata</button>
+
+        <div class="column">
+          <h2 class="address">Kükametsa 14, Botnet küla</h2>
+          <p class="rating">5.0 / 5.0</p>
         </div>
+
+        <p class="description width100">The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog. The quick brown fox jumps over the lazy dog.</p>
+
+        <button id="reviews-show" class="open">Arvustused</button>
+
+        <hr>
+
+        <button id="edit-show" class="light open">Redigeeri</button>
+        <button id="delete" class="light open">Kustuta</button>
+      </div>
+
+      <div id="list-view" class="column g16">
+
+        <h3 class="text-center subtitle">Punktid sinu lähedal</h3>
+
+        <button id="add-show" class="light">Lisa laadimispunkt</button>
+
+        <hr>
+  
+        <div class="locations">
+        </div>
+      </div>
+
+      <div id="reviews-view" class="column g16 p16" style="display: none;">
+        <div class="row g16 center-cross">
+          <button id="reviews-back" class="open" style="width: fit-content;">🡸</button>
+
+          <h3>Arvustused</h3>
+        </div>
+
+        <div id="reviews" class="content column g8">
+      
+        </div>
+
+        <button id="rate-show" class="open">Kirjuta arvustus</button>
+      </div>
+
+      <div id="add-view" class="column p16 g16" style="display: none;">
+        <div class="row g16 center-cross">
+          <button id="add-back" class="open" style="width: fit-content;">🡸</button>
+
+          <h3>Lisamine</h3>
+        </div>
+
+        <p class="width100 text-center">Vajuta kaardile, et valida asukoht</p>
       </div>
 
     </div>
 
   </div>
-  <script>
-    const tallinnCenter = [59.4270, 24.7256];
-    // Create a map object and set the view to a given center and zoom level
-    let map = L.map('map').setView(tallinnCenter, 13);
+  <div id="login-dialog" class="dialog" style="display: none;">
+    <div class="content column g32">
+      <div class="row g16 center-cross width100">
+        <button id="login-close" class="open" style="width: fit-content;">🡸</button>
 
-    // Add a tile layer from OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-    }).addTo(map);
+        <h3>Logi sisse</h3>
+      </div>
 
-    // Add a routing control with two waypoints
-    // L.Routing.control({
-    //   waypoints: [
-    //     L.latLng(59.4370, 24.7536),
-    //     L.latLng(59.4349, 24.7281)
-    //   ]
-    // }).addTo(map);
+      <div class="column g8 width100">
+        <p>Kasutajanimi</p>
+        <input type="text" name="username" id="login-username">
+      </div>
+      
+      <div class="column g8 width100">
+        <p>Parool</p>
+        <input type="password" name="password" id="login-password">
+      </div>
 
-    // Generate 10 random waypoints within the map bounds
-    let waypoints = [];
-    let bounds = map.getBounds();
-    let southWest = bounds.getSouthWest();
-    let northEast = bounds.getNorthEast();
-    for (let i = 0; i < 80; i++) {
-      let lat = tallinnCenter[0] + (Math.random() * 0.03 - 0.015);
-      let lng = tallinnCenter[1] + (Math.random() * 0.08 - 0.04);
-      L.marker([ lat, lng ]).addTo(map);
-      // waypoints.push(L.latLng(lat, lng));
-    }
+      <button id="login-submit" class="button">Sisene</button>
+    </div>
+  </div>
+  <div id="register-dialog" class="dialog" style="display: none;">
+    <div class="content column g32">
+      <div class="row g16 center-cross width100">
+        <button id="register-close" class="open" style="width: fit-content;">🡸</button>
 
-    // Create a marker cluster group and add the waypoints to it
-    // let markers = L.markerClusterGroup();
-    // for (let i = 0; i < waypoints.length; i++) {
-    //   markers.addLayer(L.marker(waypoints[i]));
-    // }
-    // map.addLayer(markers);
-  </script>
+        <h3>Registreeru</h3>
+      </div>
+
+      <div class="column g8 width100">
+        <p>Kasutajanimi</p>
+        <input type="text" name="username" id="register-username">
+      </div>
+
+      <div class="column g8 width100">
+        <p>E-mail</p>
+        <input type="text" name="email" id="register-email">
+      </div>
+      
+      <div class="column g8 width100">
+        <p>Parool</p>
+        <input type="password" name="password" id="register-password">
+      </div>
+
+      <button id="register-submit" class="button">Registreeri</button>
+    </div>
+  </div>
+  <div id="rate-dialog" class="dialog" style="display: none;">
+    <div class="content column g32">
+      <div class="row g16 center-cross width100">
+        <button id="rate-close" class="open" style="width: fit-content;">🡸</button>
+
+        <h3>Kirjuta arvustus</h3>
+      </div>
+
+      <div class="column g8 width100">
+        <p>Hinnang</p>
+        <input type="number" id="rate-rating" name="rate-rating" min="1" max="5" step="1">
+      </div>
+      
+      <div class="column g8 width100">
+        <p>Kirjeldus</p>
+        <input type="text" name="rate-content" id="rate-content">
+      </div>
+
+      <button id="rate-submit" class="button">Valmis</button>
+    </div>
+  </div>
+  <div id="add-dialog" class="dialog" style="display: none;">
+    <div class="content column g32">
+      <div class="row g16 center-cross width100">
+        <button id="add-close" class="open" style="width: fit-content;">🡸</button>
+
+        <h3>Lisamine</h3>
+      </div>
+
+      <div class="column g8 width100">
+        <p>Address</p>
+        <input type="text" name="add-address" id="add-address">
+      </div>
+      
+      <div class="column g8 width100">
+        <p>Description</p>
+        <input type="text" name="add-description" id="add-description">
+      </div>
+
+      <button id="add-submit" class="button">Valmis</button>
+    </div>
+  </div>
+  <div id="edit-dialog" class="dialog" style="display: none;">
+    <div class="content column g32">
+      <div class="row g16 center-cross width100">
+        <button id="edit-close" class="open" style="width: fit-content;">🡸</button>
+
+        <h3>Redigeeri</h3>
+      </div>
+
+      <div class="column g8 width100">
+        <p>Address</p>
+        <input type="text" name="edit-address" id="edit-address">
+      </div>
+      
+      <div class="column g8 width100">
+        <p>Description</p>
+        <input type="text" name="edit-description" id="edit-description">
+      </div>
+
+      <button id="edit-submit" class="button">Valmis</button>
+    </div>
+  </div>
+
+
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script src="/static/main.js"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@ Always check for them before parsing retrieved data!
 Get methods use URL parameters, other methods use JSON body
 """
 
-from flask import Flask, send_from_directory, request, session
+from flask import Flask, send_from_directory, request, session, redirect
 from Socket.Models.Socket import *
 from Socket.Models.User import *
 

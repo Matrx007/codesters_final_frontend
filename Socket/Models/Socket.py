@@ -99,7 +99,7 @@ class Tag:
         if Id != 0:
             try:
                 cur.execute(
-                    "SELECT * FROM Tags WHERE Id=?",
+                    "DELETE FROM Tags WHERE Id=?",
                     (Id,)
                 )
             except mariadb.Error as e:
@@ -591,7 +591,7 @@ class Socket:
         # Read the socket
         try:
             cur.execute(
-                "SELECT * FROM Sockets WHERE Id=?",
+                "DELETE FROM Sockets WHERE Id=?",
                 (SocketId,)
             )
             conn.commit()

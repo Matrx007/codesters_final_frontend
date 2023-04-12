@@ -1,0 +1,233 @@
+<html>
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
+  <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    * {
+      box-sizing: content-box;
+    }
+
+    *, p, b, h1, h2, h3, h4, h5, h6, button, a, input {
+      font-family: Arial, Helvetica, sans-serif;
+      letter-spacing: 0.2px;
+      margin: 0;
+      word-wrap: break-word;
+    }
+
+    hr {
+      width: 100%;
+
+      border: none;
+      border-top: solid 1px #eee;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .panel {
+      position: fixed;
+      z-index: 1000;
+
+      top: 32px;
+      right: 32px;
+      /* bottom: 32px; */
+      width: 320px;
+      gap: 16px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      
+      filter: drop-shadow(0 0 32px #00000040);
+    }
+
+    .panel > .box {
+      position: relative;
+      overflow: hidden;
+
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+
+      padding: 8px;
+
+      border-radius: 8px;
+      background-color: white;
+    }
+
+    .panel .subtitle {
+      padding-top: 16px;
+    }
+
+    .panel > .box:last-child {
+      flex: 1;
+    }
+
+    .title {
+      padding-block: 16px;
+      border-radius: 6px;
+
+      background-color: #000;
+      color: white;
+    }
+
+    .slogan {
+      text-decoration: underline;
+      font-size: 24px;
+
+      margin-bottom: 8px;
+    }
+
+    .locations {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .locations > .location {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 8px;
+
+      border-radius: 6px;
+      border: solid 1px #eee;
+    }
+
+    .locations > .location > .open {
+      align-self: flex-end;
+    }
+
+    .locations > .location > .count {
+      font-size: 14px;
+    }
+
+    button {
+      cursor: pointer;
+
+      padding: 8px 16px;
+      border: none;
+      outline: none;
+
+      border-radius: 6px;
+
+      font-size: 14px;
+      font-weight: 400;
+      background-color: #eee;
+      color: black;
+    }
+
+    button:hover,
+    button:focus {
+      background-color: #ddd;
+    }
+
+    .details {
+      padding: 0 16px 16px 16px;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 8px;
+    }
+
+    .box > img {
+      margin: -8px -8px 0 -8px
+    }
+  </style>
+  <div id="map" style="height: 100vh; width: 100vw;"></div>
+  <div class="panel">
+
+    <div class="box">
+
+      <h1 class="text-center title">SOCKET</h1>
+  
+      <i class="text-center slogan">Seek power</i>
+
+    </div>
+
+
+    <div class="box">
+
+      <!-- <img src="https://media.voog.com/0000/0046/9603/photos/myyrivahe%20R%201500%20(1%20of%201).jpg" alt="">
+      <div class="details">
+        <h2>Revale Cafe Müürivahe</h3>
+        <h4>8 laadimispunkti</h4>
+        
+        <hr>
+
+        <span><b>4.6</b> / 5</span>
+
+        <button class="open">Vaata laadimispunkte</button>
+      </div> -->
+
+      <h3 class="text-center subtitle">Punktid sinu lähedal</h3>
+
+      <div class="locations">
+        <div class="location">
+          <b class="name">Ülemiste keskus</b>
+          <p class="count">36 laadimispunkti</p>
+          <button class="open">Vaata</button>
+        </div>
+        <div class="location">
+          <b class="name">Reval Cafe Müürivahe</b>
+          <p class="count">12 laadimispunkti</p>
+          <button class="open">Vaata</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <script>
+    const tallinnCenter = [59.4270, 24.7256];
+    // Create a map object and set the view to a given center and zoom level
+    let map = L.map('map').setView(tallinnCenter, 13);
+
+    // Add a tile layer from OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Add a routing control with two waypoints
+    // L.Routing.control({
+    //   waypoints: [
+    //     L.latLng(59.4370, 24.7536),
+    //     L.latLng(59.4349, 24.7281)
+    //   ]
+    // }).addTo(map);
+
+    // Generate 10 random waypoints within the map bounds
+    let waypoints = [];
+    let bounds = map.getBounds();
+    let southWest = bounds.getSouthWest();
+    let northEast = bounds.getNorthEast();
+    for (let i = 0; i < 80; i++) {
+      let lat = tallinnCenter[0] + (Math.random() * 0.03 - 0.015);
+      let lng = tallinnCenter[1] + (Math.random() * 0.08 - 0.04);
+      L.marker([ lat, lng ]).addTo(map);
+      // waypoints.push(L.latLng(lat, lng));
+    }
+
+    // Create a marker cluster group and add the waypoints to it
+    // let markers = L.markerClusterGroup();
+    // for (let i = 0; i < waypoints.length; i++) {
+    //   markers.addLayer(L.marker(waypoints[i]));
+    // }
+    // map.addLayer(markers);
+  </script>
+</body>
+</html>
