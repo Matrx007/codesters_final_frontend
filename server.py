@@ -8,7 +8,7 @@ Always check for them before parsing retrieved data!
 Get methods use URL parameters, other methods use JSON body
 """
 
-from flask import Flask, send_from_directory, request, session, redirect
+from flask import Flask, send_from_directory, request, session, redirect, escape
 from Socket.Models.Socket import *
 from Socket.Models.User import *
 
@@ -20,6 +20,10 @@ app.secret_key = 'password123'
 @app.route('/', methods=['GET'])
 def Index():
     return send_from_directory('static', 'index.html')
+
+@app.route('/favicon.ico', methods=['GET'])
+def Favicon():
+    return send_from_directory('static', 'favicon.ico')
 
 """API routes for user model"""
 
@@ -36,11 +40,11 @@ def Login():
 
     session['Password'] = json['Password']
     if 'Email' in json:
-        session['Email'] = json['Email']
-        return User.Read(Email=json['Email'], Password=json['Password'])
+        session['Email'] = escape(json['Email'])
+        return User.Read(Email=escape(json['Email']), Password=json['Password'])
     elif 'Username' in json:
-        session['Username'] = json['Username']
-        return User.Read(Username=json['Username'], Password=json['Password'])
+        session['Username'] = escape(json['Username'])
+        return User.Read(Username=escape(json['Username']), Password=json['Password'])
 
     return User.Read()
 
@@ -61,13 +65,13 @@ def Register():
     Email = ''
     Password = ''
     if 'Username' in json:
-        Username = json['Username']
+        Username = escape(json['Username'])
     if 'Email' in json:
-        Email = json['Email']
+        Email = escape(json['Email'])
     if 'Password' in json:
         Password = json['Password']
 
-    user = User.Create(Username=Username, Email=json['Email'], Password=json['Password'])
+    user = User.Create(Username=Username, Email=escape(json['Email']), Password=escape(json['Password']))
 
     if not "error" in user:
         session['Username'] = user['Username']
@@ -122,13 +126,13 @@ def UpdateUser():
     NewPassword = ''
 
     if 'Username' in json:
-        Username = json['Username']
+        Username = escape(json['Username'])
     if 'Email' in json:
-        Email = json['Email']
+        Email = escape(json['Email'])
     if 'NewUsername' in json:
-        NewUsername = json['NewUsername']
+        NewUsername = escape(json['NewUsername'])
     if 'NewEmail' in json:
-        NewEmail = json['NewEmail']
+        NewEmail = escape(json['NewEmail'])
     if 'NewPassword' in json:
         NewPassword = json['NewPassword']
 
@@ -174,11 +178,10 @@ def CreateTag():
 
     json = request.json
 
-
     if 'BelongsTo' in json:
         BelongsTo = json['BelongsTo']
     if 'Name' in json:
-        Name = json['Name']
+        Name = escape(json['Name'])
 
     return Tag.Create(BelongsTo, Name)
 
@@ -194,9 +197,9 @@ def DeleteTag():
     Id = 0
 
     if 'BelongsTo' in json:
-        BelongsTo = json['BelongsTo']
+        BelongsTo = int(json['BelongsTo'])
     if 'Id' in json:
-        Id = json['Id']
+        Id = int(json['Id'])
 
     return Tag.Delete(Id, BelongsTo)
 
@@ -233,9 +236,9 @@ def PostReview():
     if 'BelongsTo' in json:
         BelongsTo = json['BelongsTo']
     if 'Author' in json:
-        Author = json['Author']
+        Author = escape(json['Author'])
     if 'Content' in json:
-        Content = json['Content']
+        Content = escape(json['Content'])
     if 'Rating' in json:
         Rating = json['Rating']
 
@@ -272,9 +275,9 @@ def UpdateReview():
     if 'Id' in json:
         Id = json['Id']
     if 'NewContent' in json:
-        NewContent = json['NewContent']
+        NewContent = escape(json['NewContent'])
     if 'NewRating' in json:
-        NewRating = json['NewRating']
+        NewRating = int(json['NewRating'])
 
     return Review.Update(Username, Password, Id, NewContent, NewRating)
 
@@ -298,7 +301,7 @@ def DeleteReview():
     Id = 0
 
     if 'Id' in json:
-        Id = json['Id']
+        Id = escape(json['Id'])
 
     return Review.Delete(Username, Password, Id)
 
@@ -351,12 +354,12 @@ def PostSocket():
 
     Latitude = float(json['Latitude'])
     Longitude = float(json['Longitude'])
-    Address = json['Address']
-    Description = json['Description']
+    Address = escape(json['Address'])
+    Description = escape(json['Description'])
     Tags = []
 
     if 'Tags' in json:
-        Tags = json['Tags']
+        Tags = escape(json['Tags'])
 
     return SocketDTO.CreateDTO(
         Username,
@@ -405,9 +408,9 @@ def UpdateSocket():
     if 'NewLongitude' in json:
         NewLongitude = json['NewLongitude']
     if 'NewAddress' in json:
-        NewAddress = json['NewAddress']
+        NewAddress = escape(json['NewAddress'])
     if 'NewDescription' in json:
-        NewDescription = json['NewDescription']
+        NewDescription = escape(json['NewDescription'])
 
     return Socket.Update(
         user['Id'],
