@@ -253,6 +253,7 @@ function addSocketToList(socket) {
 // add an event listener for the moveend event
 async function onMove() {
   // get the bounding coordinates of the current map view
+  console.log('onMove() called')
   let bounds = map.getBounds();
   let southWest = bounds.getSouthWest();
   let northEast = bounds.getNorthEast();
@@ -267,8 +268,6 @@ async function onMove() {
     let marker = L.marker([socket.Latitude, socket.Longitude]).addTo(map).on('click', function() {
       showSocket(socket);
     });
-    addSocketToList(socket);
-    addSocketToList(socket);
     addSocketToList(socket);
     markerGroup.addLayer(marker);
   }
