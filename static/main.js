@@ -172,6 +172,7 @@ async function socketDelete(socketID) {
   };
   // use fetch to send the request to the api endpoint
   let result = await (await fetch('/api/socket', options)).json();
+  console.log(result)
 
   return result;
 }

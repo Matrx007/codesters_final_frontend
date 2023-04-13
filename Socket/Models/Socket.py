@@ -99,7 +99,7 @@ class Tag:
         if Id != 0:
             try:
                 cur.execute(
-                    "DELETE FROM Tags WHERE Id=?",
+                    "SELECT FROM Tags WHERE Id=?",
                     (Id,)
                 )
             except mariadb.Error as e:
@@ -591,7 +591,7 @@ class Socket:
         # Read the socket
         try:
             cur.execute(
-                "DELETE FROM Sockets WHERE Id=?",
+                "SELECT * FROM Sockets WHERE Id=?",
                 (SocketId,)
             )
             conn.commit()
@@ -599,32 +599,37 @@ class Socket:
             logging.error(e)
 
 
-        for (Id,Latitude,Longitude,AuthorId,LastEditorId,NewAddress,NewDescription,CreationTimestamp) in cur:
-            sock = Socket(
-                Id,
-                Latitude,
-                Longitude,
-                AuthorId,
-                LastEditorId,
-                NewAddress,
-                NewDescription,
-                int(time.mktime(CreationTimestamp.timetuple()))
+        isEntry = False
+        sock = Socket(0, 180.0, 180.0, 0, 0, '', '', 0)
+        print("Socket.Delete() called")
+        for (Id,Latitude,Longitude,AuthorId,LastEditorId,Address,Description,CreationTimestamp) in cur:
+            sock.Id = Id
+            sock.Latitude = Latitude
+            sock.Longitude = Longitude
+            sock.AuthorId = AuthorId
+            sock.LastEditorId = LastEditorId
+            sock.Address = Address
+            sock.Description = Description
+            sock.CreationTimestamp = int(time.mktime(CreationTimestamp.timetuple()))
+            isEntry = True
+
+        # Delete the entry
+        try:
+            cur.execute(
+                "DELETE FROM Sockets WHERE Id=?",
+                (SocketId,)
             )
-
-            # Delete the entry
-            try:
-                cur.execute(
-                    "DELETE FROM Sockets WHERE Id=?",
-                    (SocketId,)
-                )
-            except mariadb.Error as e:
-                logging.error(e)
-
-            conn.close()
-            return sock.__dict__
+            conn.commit()
+            print(SocketId)
+        except mariadb.Error as e:
+            logging.error(e)
 
         conn.close()
-        return { "error": "Invalid socket id" }
+
+        if isEntry:
+            return sock.__dict__
+        else:
+            return { "error": "Invalid socket id" }
 
 
 

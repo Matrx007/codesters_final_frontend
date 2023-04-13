@@ -438,7 +438,8 @@ def DeleteSocket():
     if 'Password' in session:
         Password = session['Password']
 
-    user = User.Read(Username, Password)
+    print(f'{Username}: {Password}')
+    user = User.Read(Username=Username, Password=Password)
     if "error" in user:
         return user
 
